@@ -14,18 +14,24 @@ concurrency:
 
 jobs:
   test:
+    name: ${{ matrix.formula }} / ${{ matrix.architecture }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - runner: macos-15
             architecture: arm64
+            formula: slack-axi
           - runner: macos-15-intel
             architecture: x86_64
+            formula: slack-axi
+          - runner: macos-15
+            architecture: arm64
+            formula: cookidoo-axi
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -40,6 +46,6 @@ jobs:
           mkdir -p "$tap_parent"
           ln -s "$GITHUB_WORKSPACE" "$tap_parent/homebrew-tap"
 
-      - run: brew audit --strict --online aimlesx/tap/slack-axi
-      - run: brew install --build-from-source aimlesx/tap/slack-axi
-      - run: brew test aimlesx/tap/slack-axi
+      - run: brew audit --strict --online "aimlesx/tap/${{ matrix.formula }}"
+      - run: brew install --build-from-source "aimlesx/tap/${{ matrix.formula }}"
+      - run: brew test "aimlesx/tap/${{ matrix.formula }}"
