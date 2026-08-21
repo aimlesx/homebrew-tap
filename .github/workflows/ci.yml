@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homebrew-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            architecture: arm64
+          - runner: macos-15-intel
+            architecture: x86_64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Verify runner architecture
+        run: test "$(uname -m)" = "${{ matrix.architecture }}"
+
+      - name: Link this checkout as the tap
+        shell: bash
+        run: |
+          set -euo pipefail
+          tap_parent="$(brew --repository)/Library/Taps/aimlesx"
+          mkdir -p "$tap_parent"
+          ln -s "$GITHUB_WORKSPACE" "$tap_parent/homebrew-tap"
+
+      - run: brew audit --strict --online aimlesx/tap/slack-axi
+      - run: brew install --build-from-source aimlesx/tap/slack-axi
+      - run: brew test aimlesx/tap/slack-axi
