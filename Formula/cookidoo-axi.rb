@@ -3,8 +3,8 @@ require "digest"
 class CookidooAxi < Formula
   desc "Agent-friendly CLI for the unofficial Cookidoo API"
   homepage "https://github.com/aimlesx/cookidoo-axi"
-  url "https://github.com/aimlesx/cookidoo-axi/releases/download/v0.1.0-beta.2/cookidoo-axi-0.1.0-beta.2.tgz"
-  sha256 "fd72425d10cc8fcebb7b2adadb0f0284f4eba9030b3554252c188e81210d82c4"
+  url "https://github.com/aimlesx/cookidoo-axi/releases/download/v0.1.0-beta.3/cookidoo-axi-0.1.0-beta.3.tgz"
+  sha256 "e6206ccd4a53ff3858b3250924b65b8d9166c4d95941f20f6f9eb205b23abe5e"
   license "MIT"
 
   depends_on arch: :arm64
@@ -32,7 +32,7 @@ class CookidooAxi < Formula
     skill = libexec/"skills/cookidoo-axi/SKILL.md"
     assert_predicate skill, :file?
     assert_operator skill.size, :>, 0
-    assert_equal "3743f3d9f23e784c4d93bf19cc896561b2b86a2ebc535e9421d40802c1d66b29", Digest::SHA256.file(skill).hexdigest
+    assert_equal "5d90186f6ef56db8542bcc4c4658d9d9ea43542d0c246b8bd2fc1fa8afb4803f", Digest::SHA256.file(skill).hexdigest
 
     doctor = JSON.parse(shell_output("#{bin}/cookidoo-axi auth doctor --output json")).fetch("data")
     assert_equal "loaded", doctor.fetch("keychainBinding")
