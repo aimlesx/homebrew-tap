@@ -21,10 +21,10 @@ jobs:
         include:
           - runner: macos-15
             architecture: arm64
-            formula: slack-axi
+            formula: slky
           - runner: macos-15-intel
             architecture: x86_64
-            formula: slack-axi
+            formula: slky
           - runner: macos-15
             architecture: arm64
             formula: cookidoo-axi
@@ -33,6 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Verify runner architecture
@@ -49,3 +50,34 @@ jobs:
       - run: brew audit --strict --online "aimlesx/tap/${{ matrix.formula }}"
       - run: brew install --build-from-source "aimlesx/tap/${{ matrix.formula }}"
       - run: brew test "aimlesx/tap/${{ matrix.formula }}"
+
+      - name: Verify an installed Slack AXI keg migrates and upgrades to slky
+        if: matrix.formula == 'slky'
+        shell: bash
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          set -euo pipefail
+          tap="$(brew --repository)/Library/Taps/aimlesx/homebrew-tap"
+          brew_bin="$(brew --prefix)/bin"
+          migration_home="$RUNNER_TEMP/slky-migration-home"
+          mkdir -p "$migration_home"
+          brew uninstall aimlesx/tap/slky
+          # Use the original tap revision that shipped slack-axi 0.1.0.
+          git worktree add --detach "$RUNNER_TEMP/legacy-tap" 07fbbd7e24d9a005ef9e7bbc73957a0af91a0ab8
+          ln -sfn "$RUNNER_TEMP/legacy-tap" "$tap"
+          brew install --build-from-source aimlesx/tap/slack-axi
+          test "$("$brew_bin/slack-axi" --version)" = "0.1.0"
+          cat > "$RUNNER_TEMP/migration-policy.json" <<'JSON'
+          {"version":1,"allow_direct_apply":[],"allowed_unfurl_domains":["migration.example"]}
+          JSON
+          HOME="$migration_home" "$brew_bin/slack-axi" policy apply "$RUNNER_TEMP/migration-policy.json"
+
+          ln -sfn "$GITHUB_WORKSPACE" "$tap"
+          brew migrate slack-axi
+          test -d "$(brew --cellar)/slky/0.1.0"
+          brew upgrade --build-from-source aimlesx/tap/slky
+          brew test aimlesx/tap/slky
+          test ! -e "$brew_bin/slack-axi"
+          HOME="$migration_home" "$brew_bin/slky" policy show --output json > "$RUNNER_TEMP/migrated-policy.json"
+          jq -e '.schema == "slky/v1" and .data.policy.allowed_unfurl_domains == ["migration.example"]' "$RUNNER_TEMP/migrated-policy.json"
