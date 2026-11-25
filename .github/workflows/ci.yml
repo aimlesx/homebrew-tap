@@ -47,6 +47,13 @@ jobs:
           mkdir -p "$tap_parent"
           ln -s "$GITHUB_WORKSPACE" "$tap_parent/homebrew-tap"
 
+      - name: Trust the formula under test
+        shell: bash
+        run: |
+          if brew command trust >/dev/null 2>&1; then
+            brew trust --formula "aimlesx/tap/${{ matrix.formula }}"
+          fi
+
       - run: brew audit --strict --online "aimlesx/tap/${{ matrix.formula }}"
       - run: brew install --build-from-source "aimlesx/tap/${{ matrix.formula }}"
       - run: brew test "aimlesx/tap/${{ matrix.formula }}"
@@ -74,6 +81,10 @@ jobs:
           HOME="$migration_home" "$brew_bin/slack-axi" policy apply "$RUNNER_TEMP/migration-policy.json"
 
           ln -sfn "$GITHUB_WORKSPACE" "$tap"
+          # Uninstall removes item trust. Migration loads the renamed formula.
+          if brew command trust >/dev/null 2>&1; then
+            brew trust --formula aimlesx/tap/slky
+          fi
           brew migrate slack-axi
           test -d "$(brew --cellar)/slky/0.1.0"
           brew upgrade --build-from-source aimlesx/tap/slky
