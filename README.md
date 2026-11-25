@@ -1,4 +1,4 @@
-# Homebrew tap for AXI CLIs
+# Homebrew tap
 
 ## Cookidoo AXI
 
@@ -21,29 +21,29 @@ brew uninstall cookidoo-axi
 See the [Cookidoo AXI README](https://github.com/aimlesx/cookidoo-axi#readme)
 for authentication, safety, and additional profile-removal guidance.
 
-## Slack AXI
+## slky
 
-[Slack AXI](https://github.com/aimlesx/slack-axi) is an agent-ergonomic Slack
-CLI for macOS.
-
-```sh
-brew install aimlesx/tap/slack-axi
-```
-
-Upgrade or uninstall it with Homebrew:
+[slky](https://github.com/aimlesx/slky) is a Slack CLI for coding agents. The formula installs the compiled [`@aimlesx/slky` npm package](https://www.npmjs.com/package/@aimlesx/slky) on Apple Silicon and Intel Macs.
 
 ```sh
-brew upgrade slack-axi
-brew uninstall slack-axi
+brew install aimlesx/tap/slky
+slky --version
 ```
 
-Slack AXI stores credentials in macOS Keychain. Before uninstalling, follow
-the access-revocation and local-data removal procedure in the
-[Slack AXI README](https://github.com/aimlesx/slack-axi#upgrade-completions-and-removal).
+To upgrade an existing Slack AXI installation, run `brew update`. If Homebrew still lists the installed formula as `slack-axi`, run `brew migrate slack-axi`. If Homebrew asks you to trust the renamed formula, run `brew trust --formula aimlesx/tap/slky` and retry the migration. Then upgrade and check your workspace profiles.
+
+```sh
+brew upgrade aimlesx/tap/slky
+slky auth list
+```
+
+Use `slky` in scripts that invoked `slack-axi`. The CLI reuses existing Slack AXI data and Keychain entries. See the [slky upgrade guide](https://github.com/aimlesx/slky#upgrading-from-slack-axi) for the output schema and updated Claude Code skill link.
+
+Before running `brew uninstall slky`, follow the [access revocation and data removal instructions](https://github.com/aimlesx/slky#upgrade-completions-and-removal) for any credentials and workspace data you want to remove.
 
 Installation defects and feature requests belong in the relevant project's
 issue tracker, not this tap. Report suspected vulnerabilities through that
 project's private reporting channel:
 
 - [Cookidoo AXI security policy](https://github.com/aimlesx/cookidoo-axi/security/policy)
-- [Slack AXI security policy](https://github.com/aimlesx/slack-axi/security/policy)
+- [slky security policy](https://github.com/aimlesx/slky/security/policy)
