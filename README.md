@@ -23,14 +23,14 @@ for authentication, safety, and additional profile-removal guidance.
 
 ## slky
 
-[slky](https://github.com/aimlesx/slky) is a Slack CLI for coding agents. It runs on Apple Silicon and Intel Macs.
+[slky](https://github.com/aimlesx/slky) is a Slack CLI for coding agents. The formula installs the compiled [`@aimlesx/slky` npm package](https://www.npmjs.com/package/@aimlesx/slky) on Apple Silicon and Intel Macs.
 
 ```sh
 brew install aimlesx/tap/slky
 slky --version
 ```
 
-To upgrade an existing Slack AXI installation, run `brew update`. If Homebrew still lists the installed formula as `slack-axi`, run `brew migrate slack-axi`. Then upgrade and check your workspace profiles.
+To upgrade an existing Slack AXI installation, run `brew update`. If Homebrew still lists the installed formula as `slack-axi`, run `brew migrate slack-axi`. If Homebrew asks you to trust the renamed formula, run `brew trust --formula aimlesx/tap/slky` and retry the migration. Then upgrade and check your workspace profiles.
 
 ```sh
 brew upgrade aimlesx/tap/slky
