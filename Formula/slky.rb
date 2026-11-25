@@ -2,7 +2,7 @@ class Slky < Formula
   desc "Agent-ergonomic Slack CLI with bounded output and safe mutations"
   homepage "https://github.com/aimlesx/slky"
   url "https://registry.npmjs.org/@aimlesx/slky/-/slky-0.2.0.tgz"
-  sha256 "PENDING_PUBLISHED_TARBALL_SHA256"
+  sha256 "b10d24ed996d1a4adf58261e039b9d811a6bab775c763bcc8c28082647555408"
   license "MIT"
 
   depends_on :macos
